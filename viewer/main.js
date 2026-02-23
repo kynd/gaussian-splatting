@@ -15,7 +15,7 @@ async function init() {
   });
 
   // The path is relative to the public folder (or root of served files)
-  const scenePath = '/data/cactus_splat3_30kSteps_142k_splats.ply';
+  const scenePath = './data/cactus_splat3_30kSteps_142k_splats.ply';
 
   const debug = setupDebugConsole();
 
