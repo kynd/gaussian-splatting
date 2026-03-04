@@ -19,14 +19,30 @@ async function init() {
 
   const debug = setupDebugConsole();
 
+  const loadingContainer = document.getElementById('loading-container');
+  const loadingText = document.getElementById('loading-text');
+
   try {
     // Load the scene with specific adjustments
     await viewer.addSplatScene(scenePath, {
       'splatAlphaRemovalThreshold': 5, // Ignore very transparent splats to clean up noise
-      'showLoadingUI': true,
+      'showLoadingUI': false,
       'rotation': [1, 0, 0, 0], // Quaternion [w, x, y, z] - Rotating 180 degrees around X-axis
       'position': [0, -0.5, 0],      // translating model to center it better
+      'onProgress': (percent, percentLabel, loaderStatus) => {
+        if (!loadingText) return;
+        let statusText = 'Loading';
+        if (loaderStatus === 1) statusText = 'Processing';
+        else if (loaderStatus === 2) statusText = 'Done';
+
+        loadingText.innerHTML = `${statusText}...<br>${percent.toFixed(1)}%<br>${percentLabel}`;
+      }
     });
+
+    // Hide loading UI when finished
+    if (loadingContainer) {
+      loadingContainer.style.display = 'none';
+    }
 
     // --- Gaussian Splat Debug Information ---
     if (viewer.getSplatMesh) {
@@ -62,6 +78,40 @@ async function init() {
       }
     };
     updateCameraInfo();
+
+    // Setup Geometries Group
+    const geomGroup = new THREE.Group();
+
+    // Normal Material
+    const material = new THREE.MeshNormalMaterial();
+
+    // Cone
+    const coneGeom = new THREE.ConeGeometry(0.5, 1, 32);
+    const cone = new THREE.Mesh(coneGeom, material);
+    cone.position.set(-0.6, 0.2, 0);
+    geomGroup.add(cone);
+
+    // Sphere
+    const sphereGeom = new THREE.SphereGeometry(0.5, 32, 16);
+    const sphere = new THREE.Mesh(sphereGeom, material);
+    sphere.position.set(0.6, 0.2, 0);
+    geomGroup.add(sphere);
+
+    // UI Toggle Logic
+    const toggle = document.getElementById('geometry-toggle');
+    const splatMesh = viewer.getSplatMesh();
+    // Use splatMesh.parent to reliably get the scene/container object
+    const sceneObj = splatMesh && splatMesh.parent ? splatMesh.parent : viewer.getSplatMesh();
+
+    if (toggle && sceneObj) {
+      toggle.addEventListener('change', (e) => {
+        if (e.target.checked) {
+          sceneObj.add(geomGroup);
+        } else {
+          sceneObj.remove(geomGroup);
+        }
+      });
+    }
 
   } catch (error) {
     console.error('Error loading splat scene:', error);

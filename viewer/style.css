@@ -18,7 +18,7 @@ canvas {
   top: 10px;
   left: 10px;
   color: white;
-  font-family: sans-serif;
+  font-family: monospace;
   background: rgba(0, 0, 0, 0.5);
   padding: 10px;
   border-radius: 5px;
@@ -35,4 +35,37 @@ canvas {
   pointer-events: none;
   white-space: pre-wrap;
   padding: 10px;
+}
+#ui-container {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 1000;
+  background: rgba(0, 0, 0, 0.7);
+  padding: 10px;
+  border-radius: 8px;
+  color: white;
+  font-family: monospace;
+}
+
+.toggle-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+#loading-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-family: monospace;
+  background: rgba(0, 0, 0, 0.7);
+  padding: 20px;
+  border-radius: 8px;
+  z-index: 1000;
+  pointer-events: none;
+  text-align: center;
 }
